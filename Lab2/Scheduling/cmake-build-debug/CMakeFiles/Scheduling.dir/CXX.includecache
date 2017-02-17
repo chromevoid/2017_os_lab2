@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/chrome/Documents/NYU/2017Spring/Operating System/2017_os_lab2/Lab2/Scheduling/main.cpp
+scheduling.h
+/Users/chrome/Documents/NYU/2017Spring/Operating System/2017_os_lab2/Lab2/Scheduling/scheduling.h
+
+/Users/chrome/Documents/NYU/2017Spring/Operating System/2017_os_lab2/Lab2/Scheduling/scheduling.h
+iostream
+-
+iomanip
+-
+cstdio
+-
+string
+-
+sstream
+-
+vector
+-
+
