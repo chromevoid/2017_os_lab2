@@ -11,6 +11,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <queue> // std::priority_queue
+#include <algorithm> // std::sort
 
 class Process {
     int A; // the arrival time of the process
@@ -24,23 +26,26 @@ public:
         C = c;
         M = m;
     }
-    int get_A() {
+    int get_A() const {
         return A;
     }
-    int get_B() {
+    int get_B() const{
         return B;
     }
-    int get_C() {
+    int get_C() const{
         return C;
     }
-    int get_M() {
+    int get_M() const{
         return M;
     }
-    int change_B(int new_b) {
+    void change_B(int new_b) {
         B = new_b;
     }
-    int change_C(int new_c) {
+    void change_C(int new_c) {
         C = new_c;
+    }
+    bool operator < (const Process p1) const {
+        return (A < p1.get_A());
     }
     friend std::ostream &operator << (std::ostream & out, const Process p) {
         out << "(" << p.A << " " << p.B << " " << p.C << " " << p.M << ")";
