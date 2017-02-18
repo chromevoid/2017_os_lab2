@@ -66,4 +66,14 @@ void get_input(int & process_number, std::vector<Process> & P) {
     std::cin.sync();
 }
 
+int randomOS(int U, FILE *pFile) {
+    unsigned int X;
+    if ( ! feof (pFile) ) {
+        if ( fscanf (pFile , "%i" , &X) == NULL );
+        else std::cout << X << std::endl;
+    }
+    return (1 + X % U);
+    return 0;
+}
+
 #endif //SCHEDULING_SCHEDULING_H

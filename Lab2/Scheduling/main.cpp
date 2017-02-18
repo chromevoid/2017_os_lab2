@@ -1,6 +1,12 @@
 #include "scheduling.h"
 
 void process() {
+    // http://www.cplusplus.com/reference/cstdio/FILE/
+    FILE * pFile;
+    pFile = fopen ("random-numbers.txt" , "r");
+    if (pFile == NULL) perror ("Error opening file");
+
+    // mine
     int process_number = 0;
     std::vector<Process> P;
     get_input(process_number, P);
@@ -15,6 +21,8 @@ void process() {
     std::cout << "The (sorted) input is: " << process_number << " ";
     for (int i = 0; i < process_number; i++)
         std::cout << P[i] << " ";
+
+    if (pFile != NULL) fclose (pFile);
 }
 
 int main(int argc, char const * argv[]) {
