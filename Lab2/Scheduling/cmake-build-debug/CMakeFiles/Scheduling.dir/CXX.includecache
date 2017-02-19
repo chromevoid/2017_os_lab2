@@ -23,6 +23,8 @@ sstream
 -
 vector
 -
+deque
+-
 queue
 -
 algorithm

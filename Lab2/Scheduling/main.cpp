@@ -8,9 +8,10 @@ void process() {
 
     // mine
     int process_number = 0;
-    std::vector<Process> P;
+    std::deque<Process> P;
     get_input(process_number, P);
 
+    // get input and print the info
     std::cout << "The original input was: " << process_number << " ";
     for (int i = 0; i < process_number; i++)
         std::cout << P[i] << " ";
@@ -21,6 +22,10 @@ void process() {
     std::cout << "The (sorted) input is: " << process_number << " ";
     for (int i = 0; i < process_number; i++)
         std::cout << P[i] << " ";
+    std::cout << std::endl;
+
+    // FCFS
+    FCFS(process_number, P, pFile);
 
     if (pFile != NULL) fclose (pFile);
 }
