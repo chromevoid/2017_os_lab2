@@ -262,6 +262,9 @@ void RR(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose, 
     double total_turnaround_time = 0;
     double total_waiting_time = 0;
 
+    bool ready_empty = false;
+    if (ready.empty()) ready_empty = true;
+
     int cycle_count = 0;
     if (verbose) std::cout << "\nThis detailed printout gives the state and remaining burst for each process.\n" << std::endl;
     while (!unstarted.empty() || !ready.empty() || !running.empty() || !blocked.empty()) {
@@ -282,8 +285,6 @@ void RR(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose, 
             }
             else break;
         }
-        bool ready_empty = false;
-        if (ready.empty()) ready_empty = true;
         // deal with the blocked processes
         if (!blocked.empty()) total_io++;
         for (int i = 0; i < blocked.size(); i++) {
@@ -466,17 +467,27 @@ void Uniprocessing(int process_number, std::deque<Process> &P, FILE *pFile, bool
 void SJF(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose, bool random) {
     std::vector<Process*> unstarted;
     for (int i = 0; i < P.size(); i++) unstarted.push_back(&P[i]);
-    auto compareP = [](Process* p1, Process* p2) { return (*p1) > (*p2); };
+    auto compareP = [](Process* p1, Process* p2) {
+        if ((*p1).get_C() > (*p2).get_C())
+            return true;
+        if ((*p1).get_C() < (*p2).get_C())
+            return false;
+        if ((*p1).get_C() == (*p2).get_C())
+            return (*p1) > (*p2);
+        return (*p1) > (*p2);
+
+    };
     std::priority_queue<Process*, std::vector<Process*>, decltype(compareP)> ready(compareP);
     std::vector<Process*> running;
     std::vector<Process*> blocked;
     std::vector<Process*> tmp_end;
-    int q = 2;
-    int q_count = 0;
     double total_cpu = 0;
     double total_io = 0;
     double total_turnaround_time = 0;
     double total_waiting_time = 0;
+
+    bool ready_empty = false;
+    if (ready.empty()) ready_empty = true;
 
     int cycle_count = 0;
     if (verbose) std::cout << "\nThis detailed printout gives the state and remaining burst for each process.\n" << std::endl;
@@ -492,14 +503,12 @@ void SJF(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose,
         for (int i = 0; i < unstarted.size(); i++) {
             if ((*unstarted[i]).get_A() == cycle_count) {
                 (*unstarted[i]).get_Ready();
-                ready.push(unstarted[i]);
+                tmp_end.push_back(unstarted[i]);
                 unstarted.erase(unstarted.begin());
                 i--;
             }
             else break;
         }
-        bool ready_empty = false;
-        if (ready.empty()) ready_empty = true;
         // deal with the blocked processes
         if (!blocked.empty()) total_io++;
         for (int i = 0; i < blocked.size(); i++) {
@@ -510,17 +519,13 @@ void SJF(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose,
                 (*blocked[i]).get_Ready();
                 // use tmp vector to store the blocked-end process
                 // so these process won't be handled in ready queue in this round
-                if (ready_empty)
-                    ready.push(blocked[i]);
-                else
-                    tmp_end.push_back(blocked[i]);
+                tmp_end.push_back(blocked[i]);
                 blocked.erase(blocked.begin() + i);
                 i--;
             }
         }
         // if a process is running
         if (!running.empty()) {
-            q_count++;
             // change the burst and remaining time
             (*running[0]).change_CPU_burst((*running[0]).get_CPU_burst() - 1);
             (*running[0]).change_C((*running[0]).get_C() - 1);
@@ -532,7 +537,6 @@ void SJF(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose,
                 (*running[0]).set_waiting_time((*running[0]).get_turnaround_time()
                                                - (*running[0]).get_IO_time() - (*running[0]).get_C_for_print());
                 running.pop_back();
-                q_count = 0;
             }
                 // it can block (remaining CPU burst time goes to zero)
             else if ((*running[0]).get_CPU_burst() == 0) {
@@ -540,21 +544,16 @@ void SJF(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose,
                 (*running[0]).set_IO_time((*running[0]).get_IO_time() + (*running[0]).get_IO_burst());
                 blocked.push_back(running[0]);
                 running.pop_back();
-                q_count = 0;
             }
-                // it can be preempted (e.g., the RR quantum goes to zero)
-            else if (q_count == q) {
-                (*running[0]).get_Ready();
-                if (ready_empty)
-                    ready.push(running[0]);
-                else
-                    tmp_end.push_back(running[0]);
-                running.pop_back();
-                q_count = 0;
-            }
+                // it can be preempted (e.g., the RR quantum goes to zero): not applicable for SJF
         }
         // if no process is running
         if (running.empty()) {
+            if (ready_empty) {
+                for (int i = 0; i < tmp_end.size(); i++)
+                    ready.push(tmp_end[i]);
+                tmp_end.clear();
+            }
             // if exists ready process
             if (!ready.empty()) {
                 // get the first ready process and delete it from the ready queue
@@ -583,7 +582,7 @@ void SJF(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose,
         cycle_count++;
     }
 
-    std::cout << "\nThe scheduling algorithm used was Round Robbin.\n" << std::endl;
+    std::cout << "\nThe scheduling algorithm used was Shortest Job First.\n" << std::endl;
     print_result(process_number, P, total_cpu, total_turnaround_time, total_waiting_time, cycle_count, total_io);
 }
 
