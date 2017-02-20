@@ -47,7 +47,7 @@ int main(int argc, char const * argv[]) {
         for (int i = count; i < argc; i++) {
             std::cin.clear();
             std::cin.sync();
-            if (i == 9) {
+            if (i ==3 || i == 9) {
                 freopen(argv[i], "r", stdin);
                 process(verbose, random);
             }

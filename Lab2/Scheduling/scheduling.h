@@ -240,6 +240,7 @@ void FCFS(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose
               << " processes per hundred cycles" << std::endl;
     std::cout << "\tAverage turnaround time: " << total_turnaround_time/process_number << std::endl;
     std::cout << "\tAverage waiting time: " << total_waiting_time/process_number << std::endl;
+    std::cout << std::endl;
 }
 
 void Uniprocessing(int process_number, std::deque<Process> &P, FILE *pFile, bool verbose, bool random) {
@@ -351,6 +352,7 @@ void Uniprocessing(int process_number, std::deque<Process> &P, FILE *pFile, bool
               << " processes per hundred cycles" << std::endl;
     std::cout << "\tAverage turnaround time: " << total_turnaround_time/process_number << std::endl;
     std::cout << "\tAverage waiting time: " << total_waiting_time/process_number << std::endl;
+    std::cout << std::endl;
 }
 
 #endif //SCHEDULING_SCHEDULING_H
