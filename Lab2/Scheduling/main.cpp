@@ -6,7 +6,7 @@ void process(bool verbose, bool random) {
     pFile = fopen ("random-numbers.txt" , "r");
     if (pFile == NULL) perror ("Error opening file");
 
-    // mine
+    // define variables
     int process_number = 0;
     std::deque<Process> P;
     get_input(process_number, P);
@@ -25,8 +25,8 @@ void process(bool verbose, bool random) {
     std::cout << std::endl;
 
 //    FCFS(process_number, P, pFile, verbose, random);
-
-    Uniprocessing(process_number, P, pFile, verbose, random);
+    RR(process_number, P, pFile, verbose, random);
+//    Uniprocessing(process_number, P, pFile, verbose, random);
 
     if (pFile != NULL) fclose (pFile);
 }
@@ -47,7 +47,7 @@ int main(int argc, char const * argv[]) {
         for (int i = count; i < argc; i++) {
             std::cin.clear();
             std::cin.sync();
-            if (i ==3 || i == 9) {
+            if (i == 8) {
                 freopen(argv[i], "r", stdin);
                 process(verbose, random);
             }
