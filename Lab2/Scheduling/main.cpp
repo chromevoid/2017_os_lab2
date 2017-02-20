@@ -26,8 +26,9 @@ void process(bool verbose, bool random) {
     }
     std::cout << std::endl;
 
-    // FCFS
-    FCFS(process_number, P, pFile, verbose, random);
+//    FCFS(process_number, P, pFile, verbose, random);
+
+    Uniprocessing(process_number, P, pFile, verbose, random);
 
     if (pFile != NULL) fclose (pFile);
 }
@@ -48,8 +49,12 @@ int main(int argc, char const * argv[]) {
         for (int i = count; i < argc; i++) {
             std::cin.clear();
             std::cin.sync();
-            freopen(argv[i], "r", stdin);
-            process(verbose, random);
+            if (i == 4) {
+                freopen(argv[i], "r", stdin);
+                process(verbose, random);
+            }
+//            freopen(argv[i], "r", stdin);
+//            process(verbose, random);
         }
     }
     else {

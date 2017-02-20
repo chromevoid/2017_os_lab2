@@ -13,7 +13,6 @@
 #include <vector>
 #include <deque>
 #include <queue> // std::priority_queue
-#include <algorithm> // std::sort
 
 class Process {
     int input_order;
@@ -84,11 +83,19 @@ public:
         std::cout << "\tI/O time: " << IO_time << std::endl;
         std::cout << "\tWaiting time: " << waiting_time << std::endl;
     }
-    bool operator < (const Process p) const {
-        if (A < p.get_A())
+    friend bool operator < (const Process p1, const Process p2) {
+        if (p1.A < p2.A)
             return true;
-        if (A == p.get_A())
-            if (input_order < p.get_input_order())
+        if (p1.A == p2.A)
+            if (p1.input_order < p2.input_order)
+                return true;
+        return false;
+    }
+    friend bool operator > (const Process p1, const Process p2) {
+        if (p1.A > p2.A)
+            return true;
+        if (p1.A == p2.A)
+            if (p1.input_order > p2.input_order)
                 return true;
         return false;
     }
@@ -213,6 +220,116 @@ void FCFS(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose
     }
 
     std::cout << "\nThe scheduling algorithm used was First Come First Served.\n" << std::endl;
+    for (int i = 0; i < P.size(); i++) {
+        std::cout << "Process " << i << ":" << std::endl;
+        P[i].print_info();
+        std::cout << std::endl;
+        total_cpu += P[i].get_C_for_print();
+        total_turnaround_time += P[i].get_turnaround_time();
+        total_waiting_time += P[i].get_waitng_time();
+    }
+
+    cycle_count -= 1;
+    std::cout.precision(6);
+    std::cout.setf( std::ios::fixed, std:: ios::floatfield );
+    std::cout << "Summary Data:" << std::endl;
+    std::cout << "\tFinishing time: " << cycle_count << std::endl;
+    std::cout << "\tCPU Utilization: " << total_cpu/cycle_count << std::endl;
+    std::cout << "\tI/O Utilization: " << total_io/cycle_count << std::endl;
+    std::cout << "\tThroughput: " << process_number * 100.00 / cycle_count
+              << " processes per hundred cycles" << std::endl;
+    std::cout << "\tAverage turnaround time: " << total_turnaround_time/process_number << std::endl;
+    std::cout << "\tAverage waiting time: " << total_waiting_time/process_number << std::endl;
+}
+
+void Uniprocessing(int process_number, std::deque<Process> &P, FILE *pFile, bool verbose, bool random) {
+    std::vector<Process*> unstarted;
+    for (int i = 0; i < P.size(); i++) unstarted.push_back(&P[i]);
+    std::priority_queue<Process, std::deque<Process*>> ready;
+    Process* running = NULL;
+    Process* blocked = NULL;
+    double total_cpu = 0;
+    double total_io = 0;
+    double total_turnaround_time = 0;
+    double total_waiting_time = 0;
+
+    int cycle_count = 0;
+    if (verbose) std::cout << "\nThis detailed printout gives the state and remaining burst for each process.\n" << std::endl;
+    while (!unstarted.empty() || !ready.empty() || running != NULL || blocked != NULL) {
+        // if verbose is true, then print the cycle info
+        if (verbose) {
+            std::cout << "Before cycle " << std::setw(5) << cycle_count << ": ";
+            for (int i = 0; i < process_number; i++)
+                std::cout << std::setw(15) << P[i].get_status();
+            std::cout << std::endl;
+        }
+        // deal with the blocked processes
+        if (blocked != NULL) {
+            total_io++;
+            (*blocked).change_IO_burst((*blocked).get_IO_burst() - 1);
+            if ((*blocked).get_IO_burst() == 0) {
+                (*blocked).get_Ready();
+                ready.push(blocked);
+                blocked = NULL;
+            }
+        }
+        // check if the process arrives
+        for (int i = 0; i < unstarted.size(); i++) {
+            if ((*unstarted[i]).get_A() == cycle_count) {
+                (*unstarted[i]).get_Ready();
+                ready.push(unstarted[i]);
+                unstarted.erase(unstarted.begin());
+                i--;
+            }
+            else break;
+        }
+        // if a process is running
+        if (running != NULL) {
+            // change the burst and remaining time
+            (*running).change_CPU_burst((*running).get_CPU_burst() - 1);
+            (*running).change_C((*running).get_C() - 1);
+            // it can terminate (remaining CPU time goes to zero)
+            if ((*running).get_C() == 0) {
+                (*running).get_Terminated();
+                (*running).set_finishing_time(cycle_count);
+                (*running).set_turnaround_time(cycle_count - (*running).get_A());
+                (*running).set_waiting_time((*running).get_turnaround_time()
+                                               - (*running).get_IO_time() - (*running).get_C_for_print());
+                running = NULL;
+            }
+                // it can block (remaining CPU burst time goes to zero)
+            else if ((*running).get_CPU_burst() == 0) {
+                (*running).get_Blocked();
+                (*running).set_IO_time((*running).get_IO_time() + (*running).get_IO_burst());
+                blocked = running;
+                running = NULL;
+            }
+            // it can be preempted (e.g., the RR quantum goes to zero): not applicable in FCFS
+        }
+        // if no process is using CPU
+        if (running == NULL && blocked == NULL) {
+            // if exists ready process
+            if (!ready.empty()) {
+
+                // get the first ready process and delete it from the ready queue
+                Process * tmp_p = ready.top();
+                ready.pop();
+                // assign CPU burst time
+                int random_number = randomOS((*tmp_p).get_B(), pFile, random);
+                if (random_number > (*tmp_p).get_C())
+                    random_number = (*tmp_p).get_C();
+                (*tmp_p).change_CPU_burst(random_number);
+                (*tmp_p).change_IO_burst(random_number * (*tmp_p).get_M());
+                // change status
+                (*tmp_p).get_Running();
+                // push it into the running queue;
+                running = tmp_p;
+            }
+        }
+        cycle_count++;
+    }
+
+    std::cout << "\nThe scheduling algorithm used was Uniprocessing.\n" << std::endl;
     for (int i = 0; i < P.size(); i++) {
         std::cout << "Process " << i << ":" << std::endl;
         P[i].print_info();
