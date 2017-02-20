@@ -16,8 +16,6 @@ void process(bool verbose, bool random) {
     for (int i = 0; i < process_number; i++)
         std::cout << P[i] << " ";
     std::cout << std::endl;
-//    auto compareP = [](Process p1, Process p2) { return p1.get_A() < p2.get_A(); };
-//    std::priority_queue<Process, std::vector<Process>, decltype(compareP)> sorted_P(compareP);
     std::sort(P.begin(), P.end());
     std::cout << "The (sorted) input is: " << process_number << " ";
     for (int i = 0; i < process_number; i++) {
@@ -49,7 +47,7 @@ int main(int argc, char const * argv[]) {
         for (int i = count; i < argc; i++) {
             std::cin.clear();
             std::cin.sync();
-            if (i == 4) {
+            if (i == 9) {
                 freopen(argv[i], "r", stdin);
                 process(verbose, random);
             }

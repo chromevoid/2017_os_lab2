@@ -245,7 +245,8 @@ void FCFS(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose
 void Uniprocessing(int process_number, std::deque<Process> &P, FILE *pFile, bool verbose, bool random) {
     std::vector<Process*> unstarted;
     for (int i = 0; i < P.size(); i++) unstarted.push_back(&P[i]);
-    std::priority_queue<Process, std::deque<Process*>> ready;
+    auto compareP = [](Process* p1, Process* p2) { return (*p1) > (*p2); };
+    std::priority_queue<Process*, std::vector<Process*>, decltype(compareP)> ready(compareP);
     Process* running = NULL;
     Process* blocked = NULL;
     double total_cpu = 0;
