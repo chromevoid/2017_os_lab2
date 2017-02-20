@@ -20,8 +20,10 @@ void process() {
 //    std::priority_queue<Process, std::vector<Process>, decltype(compareP)> sorted_P(compareP);
     std::sort(P.begin(), P.end());
     std::cout << "The (sorted) input is: " << process_number << " ";
-    for (int i = 0; i < process_number; i++)
+    for (int i = 0; i < process_number; i++) {
         std::cout << P[i] << " ";
+        P[i].set_input_order(i);
+    }
     std::cout << std::endl;
 
     // FCFS
@@ -40,7 +42,8 @@ int main(int argc, char const * argv[]) {
         }
     }
     else {
-        std::cin.clear();
+        std::cin.sync();
+        process();
         std::cin.sync();
         process();
     }
