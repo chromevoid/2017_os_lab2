@@ -1,6 +1,6 @@
 #include "scheduling.h"
 
-void process() {
+void process(bool verbose, bool random) {
     // http://www.cplusplus.com/reference/cstdio/FILE/
     FILE * pFile;
     pFile = fopen ("random-numbers.txt" , "r");
@@ -27,25 +27,33 @@ void process() {
     std::cout << std::endl;
 
     // FCFS
-    FCFS(process_number, P, pFile);
+    FCFS(process_number, P, pFile, verbose, random);
 
     if (pFile != NULL) fclose (pFile);
 }
 
 int main(int argc, char const * argv[]) {
+    bool verbose = false;
+    bool random = false;
     if (argc > 1) {
-        for (int i = 1; i < argc; i++) {
+        int count = 1;
+        if (std::string(argv[count]) == "--verbose") {
+            verbose = true;
+            count++;
+            if (std::string(argv[count]) == "--random") {
+                random = true;
+                count++;
+            }
+        }
+        for (int i = count; i < argc; i++) {
             std::cin.clear();
             std::cin.sync();
             freopen(argv[i], "r", stdin);
-            process();
+            process(verbose, random);
         }
     }
     else {
-        std::cin.sync();
-        process();
-        std::cin.sync();
-        process();
+        std::cout << "No file.";
     }
     return 0;
 }

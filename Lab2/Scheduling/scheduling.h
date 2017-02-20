@@ -110,18 +110,18 @@ void get_input(int & process_number, std::deque<Process> & P) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-int randomOS(int U, FILE *pFile) {
+int randomOS(int U, FILE *pFile, bool random) {
     unsigned int X;
     if ( ! feof (pFile) )
         // problem: fscanf return value ???
         if ( fscanf (pFile , "%i" , &X) != EOF ) {
-            std::cout << "Find burst when choosing ready process to run " << std::to_string(X) << std::endl;
+            if (random) std::cout << "Find burst when choosing ready process to run " << std::to_string(X) << std::endl;
             return (1 + X % U);
         }
     return 0;
 }
 
-void FCFS(int process_number, std::deque<Process> & P, FILE *pFile) {
+void FCFS(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose, bool random) {
     std::vector<Process*> unstarted;
     for (int i = 0; i < P.size(); i++) unstarted.push_back(&P[i]);
     std::queue<Process, std::deque<Process*>> ready;
@@ -133,13 +133,15 @@ void FCFS(int process_number, std::deque<Process> & P, FILE *pFile) {
     double total_waiting_time = 0;
 
     int cycle_count = 0;
-    std::cout << "\nThis detailed printout gives the state and remaining burst for each process.\n" << std::endl;
+    if (verbose) std::cout << "\nThis detailed printout gives the state and remaining burst for each process.\n" << std::endl;
     while (!unstarted.empty() || !ready.empty() || !running.empty() || !blocked.empty()) {
-        // print the cycle info
-        std::cout << "Before cycle " << std::setw(5) << cycle_count <<": ";
-        for (int i = 0; i < process_number; i++)
-            std::cout << std::setw(15) << P[i].get_status();
-        std::cout << std::endl;
+        // if verbose is true, then print the cycle info
+        if (verbose) {
+            std::cout << "Before cycle " << std::setw(5) << cycle_count << ": ";
+            for (int i = 0; i < process_number; i++)
+                std::cout << std::setw(15) << P[i].get_status();
+            std::cout << std::endl;
+        }
         // deal with the blocked processes
         if (!blocked.empty()) total_io++;
         for (int i = 0; i < blocked.size(); i++) {
@@ -196,7 +198,7 @@ void FCFS(int process_number, std::deque<Process> & P, FILE *pFile) {
                 Process * tmp_p = ready.front();
                 ready.pop();
                 // assign CPU burst time
-                int random_number = randomOS((*tmp_p).get_B(), pFile);
+                int random_number = randomOS((*tmp_p).get_B(), pFile, random);
                 if (random_number > (*tmp_p).get_C())
                     random_number = (*tmp_p).get_C();
                 (*tmp_p).change_CPU_burst(random_number);
@@ -223,7 +225,7 @@ void FCFS(int process_number, std::deque<Process> & P, FILE *pFile) {
     cycle_count -= 1;
     std::cout.precision(6);
     std::cout.setf( std::ios::fixed, std:: ios::floatfield );
-    std::cout << "Summary Data:\n" << std::endl;
+    std::cout << "Summary Data:" << std::endl;
     std::cout << "\tFinishing time: " << cycle_count << std::endl;
     std::cout << "\tCPU Utilization: " << total_cpu/cycle_count << std::endl;
     std::cout << "\tI/O Utilization: " << total_io/cycle_count << std::endl;
