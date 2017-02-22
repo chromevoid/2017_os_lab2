@@ -17,6 +17,13 @@
 #include <limits>
 #include <iostream>
 
+template <typename T>
+std::string toString(const T& value) {
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
+}
+
 class Process {
     int input_order;
     int A; // the arrival time of the process
@@ -53,11 +60,11 @@ public:
     int get_IO_burst() const { return IO_burst; }
     std::string get_status() {
         if (status == "ready")
-            return status + "  " + std::to_string((int) 0);
+            return status + "  0";
         if (status == "blocked")
-            return status + "  " + std::to_string((int) get_IO_burst());
+            return status + "  " + toString(get_IO_burst());
         if (status == "running")
-            return status + "  " + std::to_string((int) get_CPU_burst());
+            return status + "  " + toString(get_CPU_burst());
         if (status == "terminated")
             return status + "  0";
         return status + "  0";
@@ -125,7 +132,7 @@ int randomOS(int U, FILE *pFile, bool random) {
     if ( ! feof (pFile) )
         // problem: fscanf return value ???
         if ( fscanf (pFile , "%i" , &X) != EOF ) {
-            if (random) std::cout << "Find burst when choosing ready process to run " << std::to_string((unsigned int) X) << std::endl;
+            if (random) std::cout << "Find burst when choosing ready process to run " << toString(X) << std::endl;
             return (1 + X % U);
         }
     return 0;
