@@ -163,7 +163,7 @@ void print_result(int process_number, std::deque<Process> P, double total_cpu, d
     std::cout << std::endl;
 }
 
-void FCFS(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose, bool random) {
+void FCFS(int process_number, std::deque<Process> P, FILE *pFile, bool verbose, bool random) {
     std::vector<Process*> unstarted;
     for (int i = 0; i < P.size(); i++) unstarted.push_back(&P[i]);
     std::queue<Process, std::deque<Process*>> ready;
@@ -258,7 +258,7 @@ void FCFS(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose
     print_result(process_number, P, total_cpu, total_turnaround_time, total_waiting_time, cycle_count, total_io);
 }
 
-void RR(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose, bool random) {
+void RR(int process_number, std::deque<Process> P, FILE *pFile, bool verbose, bool random) {
     std::vector<Process*> unstarted;
     for (int i = 0; i < P.size(); i++) unstarted.push_back(&P[i]);
     std::queue<Process*, std::deque<Process*>> ready;
@@ -421,7 +421,7 @@ public:
     }
 };
 
-void Uniprocessing(int process_number, std::deque<Process> &P, FILE *pFile, bool verbose, bool random) {
+void Uniprocessing(int process_number, std::deque<Process> P, FILE *pFile, bool verbose, bool random) {
     std::vector<Process*> unstarted;
     for (int i = 0; i < P.size(); i++) unstarted.push_back(&P[i]);
 //    auto compareP = [](Process* p1, Process* p2) { return (*p1) > (*p2); };
@@ -515,7 +515,7 @@ void Uniprocessing(int process_number, std::deque<Process> &P, FILE *pFile, bool
     print_result(process_number, P, total_cpu, total_turnaround_time, total_waiting_time, cycle_count, total_io);
 }
 
-void SJF(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose, bool random) {
+void SJF(int process_number, std::deque<Process> P, FILE *pFile, bool verbose, bool random) {
     std::vector<Process*> unstarted;
     for (int i = 0; i < P.size(); i++) unstarted.push_back(&P[i]);
 //    auto compareP = [](Process* p1, Process* p2) {

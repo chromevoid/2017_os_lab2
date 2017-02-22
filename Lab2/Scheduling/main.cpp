@@ -1,11 +1,6 @@
 #include "scheduling.h"
 
 void process(bool verbose, bool random) {
-    // http://www.cplusplus.com/reference/cstdio/FILE/
-    FILE * pFile;
-    pFile = fopen ("random-numbers.txt" , "r");
-    if (pFile == NULL) perror ("Error opening file");
-
     // define variables
     int process_number = 0;
     std::deque<Process> P;
@@ -24,12 +19,28 @@ void process(bool verbose, bool random) {
     }
     std::cout << std::endl;
 
-//    FCFS(process_number, P, pFile, verbose, random);
-//    RR(process_number, P, pFile, verbose, random);
-//    Uniprocessing(process_number, P, pFile, verbose, random);
-    SJF(process_number, P, pFile, verbose, random);
+    // file open & close: http://www.cplusplus.com/reference/cstdio/FILE/
+    FILE * pFile;
+    pFile = fopen ("random-numbers.txt" , "r");
+    if (pFile == NULL) {
+        perror ("Error opening file");
+        return;
+    }
+    FCFS(process_number, P, pFile, verbose, random);
+    fclose (pFile);
 
-    if (pFile != NULL) fclose (pFile);
+    pFile = fopen ("random-numbers.txt" , "r");
+    RR(process_number, P, pFile, verbose, random);
+    fclose (pFile);
+
+    pFile = fopen ("random-numbers.txt" , "r");
+    Uniprocessing(process_number, P, pFile, verbose, random);
+    fclose (pFile);
+
+    pFile = fopen ("random-numbers.txt" , "r");
+    SJF(process_number, P, pFile, verbose, random);
+    fclose (pFile);
+
 }
 
 int main(int argc, char const * argv[]) {
@@ -38,22 +49,22 @@ int main(int argc, char const * argv[]) {
     if (argc > 1) {
         int count = 1;
         if (std::string(argv[count]) == "--verbose") {
-//            verbose = true;
+            verbose = true;
             count++;
             if (std::string(argv[count]) == "--random") {
-//                random = true;
+                random = true;
                 count++;
             }
         }
         for (int i = count; i < argc; i++) {
             std::cin.clear();
             std::cin.sync();
-            if (true) {
-                freopen(argv[i], "r", stdin);
-                process(verbose, random);
-            }
-//            freopen(argv[i], "r", stdin);
-//            process(verbose, random);
+//            if (i == 5) {
+//                freopen(argv[i], "r", stdin);
+//                process(verbose, random);
+//            }
+            freopen(argv[i], "r", stdin);
+            process(verbose, random);
         }
     }
     else {
