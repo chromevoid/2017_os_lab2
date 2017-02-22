@@ -63,6 +63,13 @@ int main(int argc, char const * argv[]) {
 //                freopen(argv[i], "r", stdin);
 //                process(verbose, random);
 //            }
+            FILE * pFile;
+            pFile = fopen (argv[i] , "r");
+            if (pFile == NULL) {
+                perror ("Error opening file");
+                return 0;
+            }
+            fclose (pFile);
             freopen(argv[i], "r", stdin);
             process(verbose, random);
         }
