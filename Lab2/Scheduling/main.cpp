@@ -24,10 +24,10 @@ void process(bool verbose, bool random) {
     }
     std::cout << std::endl;
 
-    FCFS(process_number, P, pFile, verbose, random);
+//    FCFS(process_number, P, pFile, verbose, random);
 //    RR(process_number, P, pFile, verbose, random);
 //    Uniprocessing(process_number, P, pFile, verbose, random);
-//    SJF(process_number, P, pFile, verbose, random);
+    SJF(process_number, P, pFile, verbose, random);
 
     if (pFile != NULL) fclose (pFile);
 }

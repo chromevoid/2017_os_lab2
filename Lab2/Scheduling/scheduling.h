@@ -382,11 +382,52 @@ void RR(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose, 
     print_result(process_number, P, total_cpu, total_turnaround_time, total_waiting_time, cycle_count, total_io);
 }
 
+class comparePuni {
+    bool reverse;
+public:
+    comparePuni(const bool& revparam=false) {
+        reverse=revparam;
+    }
+    bool operator() (const Process *lhs, const Process *rhs) const {
+        if (reverse) return ((*lhs)>(*rhs));
+        else return ((*lhs)<(*rhs));
+    }
+};
+
+class comparePsjf {
+    bool reverse;
+public:
+    comparePsjf(const bool& revparam=false) {
+        reverse=revparam;
+    }
+    bool operator() (const Process *lhs, const Process *rhs) const
+    {
+        if (reverse) {
+            if ((*lhs).get_C() > (*rhs).get_C())
+                return true;
+            if ((*lhs).get_C() < (*rhs).get_C())
+                return false;
+            if ((*lhs).get_C() == (*rhs).get_C())
+                return (*lhs) > (*rhs);
+            return (*lhs) > (*rhs);
+        }
+        if ((*lhs).get_C() < (*rhs).get_C())
+            return true;
+        if ((*lhs).get_C() > (*rhs).get_C())
+            return false;
+        if ((*lhs).get_C() == (*rhs).get_C())
+            return (*lhs) < (*rhs);
+        return (*lhs) < (*rhs);
+    }
+};
+
 void Uniprocessing(int process_number, std::deque<Process> &P, FILE *pFile, bool verbose, bool random) {
     std::vector<Process*> unstarted;
     for (int i = 0; i < P.size(); i++) unstarted.push_back(&P[i]);
-    auto compareP = [](Process* p1, Process* p2) { return (*p1) > (*p2); };
-    std::priority_queue<Process*, std::vector<Process*>, decltype(compareP)> ready(compareP);
+//    auto compareP = [](Process* p1, Process* p2) { return (*p1) > (*p2); };
+//    std::priority_queue<Process*, std::vector<Process*>, decltype(compareP)> ready(compareP);
+    typedef std::priority_queue<Process*, std::vector<Process*>, comparePuni> my_type;
+    my_type ready(comparePuni(true));
     Process* running = NULL;
     Process* blocked = NULL;
     double total_cpu = 0;
@@ -477,17 +518,19 @@ void Uniprocessing(int process_number, std::deque<Process> &P, FILE *pFile, bool
 void SJF(int process_number, std::deque<Process> & P, FILE *pFile, bool verbose, bool random) {
     std::vector<Process*> unstarted;
     for (int i = 0; i < P.size(); i++) unstarted.push_back(&P[i]);
-    auto compareP = [](Process* p1, Process* p2) {
-        if ((*p1).get_C() > (*p2).get_C())
-            return true;
-        if ((*p1).get_C() < (*p2).get_C())
-            return false;
-        if ((*p1).get_C() == (*p2).get_C())
-            return (*p1) > (*p2);
-        return (*p1) > (*p2);
-
-    };
-    std::priority_queue<Process*, std::vector<Process*>, decltype(compareP)> ready(compareP);
+//    auto compareP = [](Process* p1, Process* p2) {
+//        if ((*p1).get_C() > (*p2).get_C())
+//            return true;
+//        if ((*p1).get_C() < (*p2).get_C())
+//            return false;
+//        if ((*p1).get_C() == (*p2).get_C())
+//            return (*p1) > (*p2);
+//        return (*p1) > (*p2);
+//
+//    };
+//    std::priority_queue<Process*, std::vector<Process*>, decltype(compareP)> ready(compareP);
+    typedef std::priority_queue<Process*, std::vector<Process*>, comparePsjf> my_type;
+    my_type ready(comparePsjf(true));
     std::vector<Process*> running;
     std::vector<Process*> blocked;
     std::vector<Process*> tmp_end;
