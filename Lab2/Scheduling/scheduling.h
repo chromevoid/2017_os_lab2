@@ -15,6 +15,7 @@
 #include <queue> // std::priority_queue
 #include <algorithm>
 #include <limits>
+#include <iostream>
 
 class Process {
     int input_order;
@@ -124,7 +125,7 @@ int randomOS(int U, FILE *pFile, bool random) {
     if ( ! feof (pFile) )
         // problem: fscanf return value ???
         if ( fscanf (pFile , "%i" , &X) != EOF ) {
-            if (random) std::cout << "Find burst when choosing ready process to run " << std::to_string(X) << std::endl;
+            if (random) std::cout << "Find burst when choosing ready process to run " << std::to_string((unsigned int) X) << std::endl;
             return (1 + X % U);
         }
     return 0;
