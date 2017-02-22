@@ -13,6 +13,8 @@
 #include <vector>
 #include <deque>
 #include <queue> // std::priority_queue
+#include <algorithm>
+#include <limits>
 
 class Process {
     int input_order;
