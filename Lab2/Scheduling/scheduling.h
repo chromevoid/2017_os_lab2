@@ -52,14 +52,14 @@ public:
     int get_IO_burst() const { return IO_burst; }
     std::string get_status() {
         if (status == "ready")
-            return status + "  " + std::to_string(0);
+            return status + "  " + std::to_string((int) 0);
         if (status == "blocked")
-            return status + "  " + std::to_string(get_IO_burst());
+            return status + "  " + std::to_string((int) get_IO_burst());
         if (status == "running")
-            return status + "  " + std::to_string(get_CPU_burst());
+            return status + "  " + std::to_string((int) get_CPU_burst());
         if (status == "terminated")
-            return status + "  " + std::to_string(0);
-        return status + "  " + std::to_string(0);
+            return status + "  0";
+        return status + "  0";
     }
     int get_finishing_time() const { return finishing_time; }
     int get_turnaround_time() const { return turnaround_time; }
