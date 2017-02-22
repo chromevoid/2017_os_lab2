@@ -75,7 +75,7 @@ int main(int argc, char const * argv[]) {
         }
     }
     else {
-        std::cout << "No file.";
+        std::cout << "No file." << std::endl;
     }
     return 0;
 }
